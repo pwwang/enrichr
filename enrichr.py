@@ -1,4 +1,4 @@
-VERSION = 'dev'
+VERSION = '0.0.0dev'
 
 import requests, json, re
 from os import path
