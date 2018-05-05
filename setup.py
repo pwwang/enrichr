@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 # get version
 from os import path
-verfile = path.join(path.dirname(__file__), 'enrichr.py')
+verfile = path.join(path.dirname(__file__), 'enrichr', '__init__.py')
 with open(verfile) as vf:
     VERSION = vf.readline().split('=')[1].strip()[1:-1]
 
