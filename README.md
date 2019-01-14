@@ -22,6 +22,10 @@
 >>> en = Enrichr(library = 'KEGG_2016')
 >>> # use a different library:
 >>> # en = Enrichr('ChEA_2016')
+>>> # Add different cutoff
+>>> en = Enrichr(cutoff = 0.01, top = 10)
+>>> # Use adjusted p-value 0.01 
+>>> # whichever comes first, records with adjusted p-value or top
 ```
 
 ### Add a gene list
@@ -58,11 +62,20 @@ Enrichr_Genelist(genes=[u'PHF14', u'RBM3', u'MSL1', ...], description=u'Enrichr 
 
 ### Do the enrichment
 ```python
->>> results = en.enrich()
+>>> results = en.enrich(cutoff = .25)
 >>> # perform enrichment on a different library and a different gene list:
 >>> # results = en.enrich(library = 'ChEA_2016', listid = 123456)
 >>> print results # a list of namedtuple
-[Enrichr_Term(rank=1, term=u'Longevity regulating pathway - multiple species_Homo sapiens_hsa04213', pval=0.00560341272708137, zscore=-2.017962732978835, combinedScore=10.461884526362898, overlappingGenes=[u'HSPA1L', u'INSR'], adjPval=0.2241365090832548, oldPval=0.0023516996733944644, oldAdjPval=0.09406798693577857), Enrichr_Term(...), ...]
+[Enrichr_Term(
+	Term          = 'Longevity regulating pathway - multiple species_hsa04213',
+	Overlap       = '2/64',
+	Pval          = 0.00560341272708137,
+	AdjPval       = 0.2241365090832548,
+	OldPval       = 0.0023516996733944644,
+	OldAdjPval    = 0.09406798693577857,
+	Z             = -2.017962732978835,
+	CombinedScore = 10.461884526362898,
+	Genes         = 'HSPA1L;INSR'), Enrichr_Term(...), ...]
 ```
 
 ### Export the results
@@ -74,10 +87,11 @@ Enrichr_Genelist(genes=[u'PHF14', u'RBM3', u'MSL1', ...], description=u'Enrichr 
 ```
 ```shell
 > cat results.txt
-rank	term	pval	zscore	combinedScore	overlappingGenes	adjPval	oldPval	oldAdjPval
-1	Longevity regulating pathway - multiple species_Homo sapiens_hsa04213	0.00560341272708	-2.01796273298	10.4618845264	HSPA1L|INSR	0.224136509083	0.00235169967339	0.0940679869358
-2	HIF-1 signaling pathway_Homo sapiens_hsa04066	0.0139920292251	-1.81648257202	7.75504992289	INSR|CUL2	0.279840584501	0.00585409985605	0.117081997121
-3	Phospholipase D signaling pathway_Homo sapiens_hsa04072	0.0262293541331	-1.84575051838	6.72014896483	CYTH2|INSR    0.339310255604	0.0110856438446	0.147808584594
+Term	Overlap	Pval	AdjPval	OldPval	OldAdjPval	Z	CombinedScore	Genes
+Longevity regulating pathway - multiple species_hsa04213	2/64	5.60E-03	2.24E-01	2.35E-03	9.41E-02	-2.018	10.462	HSPA1L;INSR
+HIF-1 signaling pathway_hsa04066	2/103	1.40E-02	2.80E-01	5.85E-03	1.17E-01	-1.816	7.755	INSR;CUL2
+Phospholipase D signaling pathway_hsa04072	2/144	2.62E-02	3.39E-01	1.11E-02	1.48E-01	-1.846	6.720	CYTH2;INSR
+MAPK signaling pathway_hsa04010	2/255	7.32E-02	3.39E-01	3.23E-02	2.34E-01	-1.896	4.957	PPM1B;HSPA1L
 ...
 ```
 

@@ -12,9 +12,36 @@ GENES = [
 GENES_FILE   = tempfile.NamedTemporaryFile(delete = False)
 RESULTS_FILE = tempfile.NamedTemporaryFile(delete = False)
 RESULTS = [
-	Enrichr_Term(rank=1, term='Longevity regulating pathway - multiple species_Homo sapiens_hsa04213', pval=0.00560, zscore=-2.01796, combinedScore=10.46188, overlappingGenes=['HSPA1L', 'INSR'], adjPval=0.22414, oldPval=0.0023517, oldAdjPval=0.09407),
-	Enrichr_Term(rank=2, term='HIF-1 signaling pathway_Homo sapiens_hsa04066', pval=0.01399, zscore=-1.81648, combinedScore=7.75505, overlappingGenes=['INSR', 'CUL2'], adjPval=0.2798406, oldPval=0.005854, oldAdjPval=0.117082),
-	Enrichr_Term(rank=3, term='Phospholipase D signaling pathway_Homo sapiens_hsa04072', pval=0.026229, zscore=-1.84575, combinedScore=6.720149, overlappingGenes=['CYTH2', 'INSR'], adjPval=0.33931, oldPval=0.0110856, oldAdjPval=0.1478086)
+	Enrichr_Term(
+		Term          = 'Longevity regulating pathway - multiple species_hsa04213',
+		Overlap       = '2/64',
+		Pval          = 0.00560341272708137,
+		AdjPval       = 0.2241365090832548,
+		OldPval       = 0.0023516996733944644,
+		OldAdjPval    = 0.09406798693577857,
+		Z             = -2.017962732978835,
+		CombinedScore = 10.461884526362898,
+		Genes         = 'HSPA1L;INSR'),
+	Enrichr_Term(
+		Term          = 'HIF-1 signaling pathway_hsa04066',
+		Overlap       = '2/103',
+		Pval          = 0.013992029225050977,
+		AdjPval       = 0.27984058450101956,
+		OldPval       = 0.005854099856053235,
+		OldAdjPval    = 0.11708199712106471,
+		Z             = -1.8164825720197595,
+		CombinedScore = 7.755049922886117,
+		Genes         = 'INSR;CUL2'),
+	Enrichr_Term(
+		Term          = 'Phospholipase D signaling pathway_hsa04072',
+		Overlap       = '2/144',
+		Pval          = 0.026229354133096315,
+		AdjPval       = 0.33931025560360656,
+		OldPval       = 0.011085643844551444,
+		OldAdjPval    = 0.14780858459401924,
+		Z             = -1.845750518377502,
+		CombinedScore = 6.720148964834603,
+		Genes         = 'CYTH2;INSR'),
 ]
 
 class TestEnrichr(testly.TestCase):
@@ -71,14 +98,15 @@ class TestEnrichr(testly.TestCase):
 			for field in result._fields:
 				rval = getattr(result, field)
 				oval = getattr(ret[i], field)
-				if isinstance(rval, float):
-					self.assertLess(abs(rval - oval), .01)
+				if isinstance(rval, (int, float)):
+					self.assertAlmostEqual(rval, oval)
 				else:
 					self.assertEqual(rval, oval)
 
+
 	def dataProvider_testGenemap(self):
 		yield 'AKT1', [
-			Enrichr_Library(name='ChEA_2016', category=u'Transcription', hasGrid=True, isFuzzy=True, format='{1} binds to the promoter region of {0}.', description='', terms=[
+			Enrichr_Library(name='ChEA_2016', category=u'Transcription', hasGrid=True, isFuzzy=False, format='{1} binds to the promoter region of {0}.', description='', terms=[
 				'EGR1_19374776_ChIP-ChIP_THP-1_Human', 'CLOCK_20551151_ChIP-Seq_293T_Human',
 				'SMARCA4_20176728_ChIP-ChIP_TSCs_Mouse', 'HNF4A_19761587_ChIP-ChIP_CACO-2_Human',
 				'E2F1_21310950_ChIP-Seq_MCF-7_Human', 'EKLF_21900194_ChIP-Seq_ERYTHROCYTE_Mouse',
@@ -109,87 +137,8 @@ class TestEnrichr(testly.TestCase):
 				'OCT4_18692474_ChIP-Seq_MEFs_Mouse', 'POU5F1_18692474_ChIP-Seq_MESCs_Mouse',
 				'TP63_22573176_ChIP-Seq_HFKS_Human', 'SUZ12_20075857_ChIP-Seq_MESCs_Mouse',
 				'HNF4A_19822575_ChIP-Seq_HepG2_Human', 'EGR1_20690147_ChIP-Seq_ERYTHROLEUKEMIA_Human']),
-			Enrichr_Library(name='TRANSFAC_and_JASPAR_PWMs', category='Transcription', hasGrid=True, isFuzzy=False, format='{1} has a binding site at the promoter of {0}.', description='PWMs from TRANSFAC and JASPAR were used to scan the promoters of all human genes in the region ?2000 and +500 from the transcription factor start site (TSS). We retained only the 100% matches to the consensus sequences to call an interaction between a factor and target gene. This gene-set library was created for a tool we previously published called Expression2Kinases (PMID: 22080467).', terms=[
-				'EGR1 (mouse)', 'TEAD1 (human)', 'CACYBP (human)', 'SMAD4 (mouse)', 'ELF3 (human)', 'SP3 (human)', 'TFAP2A (human)', 'SP1 (mouse)', 'ETV4 (human)', 'NR5A2 (mouse)',
-				'ZNF148 (human)', 'RUNX1 (human)', 'MIR138 (human)', 'GATA2 (human)', 'STAT5B (mouse)', 'RELA (human)', 'TCFAP2A (human)', 'NFE2 (human)', 'RBPJ (human)',
-				'PCBP1 (human)', 'HINFP (human)', 'YY1 (mouse)', 'MZF1_1-4 (human)', 'ETS1 (human)', 'AHR (human)', 'CRTC1 (human)', 'SP1 (human)', 'NFKB1 (human)']),
-			Enrichr_Library(name='ARCHS4_TFs_Coexp', category='Transcription', hasGrid=False, isFuzzy=True, format='{0} is coexpressed with {1}.', description='', terms=[
-				'TEAD3_human_tf_ARCHS4_coexpression', 'HOXC8_human_tf_ARCHS4_coexpression',
-				'YBX1_human_tf_ARCHS4_coexpression', 'TFE3_human_tf_ARCHS4_coexpression',
-				'TCF3_human_tf_ARCHS4_coexpression', 'SREBF1_human_tf_ARCHS4_coexpression',
-				'CIC_human_tf_ARCHS4_coexpression', 'NFE2L1_human_tf_ARCHS4_coexpression',
-				'GRHL2_human_tf_ARCHS4_coexpression', 'RCOR1_human_tf_ARCHS4_coexpression',
-				'ESR1_human_tf_ARCHS4_coexpression', 'CEBPE_human_tf_ARCHS4_coexpression',
-				'MZF1_human_tf_ARCHS4_coexpression', 'XBP1_human_tf_ARCHS4_coexpression',
-				'TCFL5_human_tf_ARCHS4_coexpression', 'GMEB2_human_tf_ARCHS4_coexpression',
-				'E2F1_human_tf_ARCHS4_coexpression', 'MAZ_human_tf_ARCHS4_coexpression',
-				'USF2_human_tf_ARCHS4_coexpression', 'ERF_human_tf_ARCHS4_coexpression',
-				'GATA3_human_tf_ARCHS4_coexpression', 'UBTF_human_tf_ARCHS4_coexpression',
-				'WHSC1_human_tf_ARCHS4_coexpression', 'PRDM4_human_tf_ARCHS4_coexpression',
-				'SRF_human_tf_ARCHS4_coexpression', 'HOXB3_human_tf_ARCHS4_coexpression',
-				'MSX2_human_tf_ARCHS4_coexpression', 'ZNF205_human_tf_ARCHS4_coexpression',
-				'HOXC13_human_tf_ARCHS4_coexpression', 'HOXC11_human_tf_ARCHS4_coexpression',
-				'MXD4_human_tf_ARCHS4_coexpression', 'TRERF1_human_tf_ARCHS4_coexpression',
-				'SPDEF_human_tf_ARCHS4_coexpression', 'ZNF384_human_tf_ARCHS4_coexpression',
-				'ELK1_human_tf_ARCHS4_coexpression', 'ATF4_human_tf_ARCHS4_coexpression',
-				'FOXA1_human_tf_ARCHS4_coexpression', 'KLF16_human_tf_ARCHS4_coexpression',
-				'TFAP2A_human_tf_ARCHS4_coexpression', 'CREBZF_human_tf_ARCHS4_coexpression',
-				'ESR2_human_tf_ARCHS4_coexpression', 'FOXK2_human_tf_ARCHS4_coexpression',
-				'RFX5_human_tf_ARCHS4_coexpression', 'UBP1_human_tf_ARCHS4_coexpression',
-				'SKI_human_tf_ARCHS4_coexpression', 'ZBTB7B_human_tf_ARCHS4_coexpression',
-				'SNAPC4_human_tf_ARCHS4_coexpression', 'SMAD3_human_tf_ARCHS4_coexpression',
-				'E4F1_human_tf_ARCHS4_coexpression', 'FOXI1_human_tf_ARCHS4_coexpression',
-				'ZNF282_human_tf_ARCHS4_coexpression', 'HOXC5_human_tf_ARCHS4_coexpression',
-				'RARG_human_tf_ARCHS4_coexpression', 'RELA_human_tf_ARCHS4_coexpression',
-				'ESRRA_human_tf_ARCHS4_coexpression', 'SIX5_human_tf_ARCHS4_coexpression',
-				'IRX3_human_tf_ARCHS4_coexpression', 'HSF1_human_tf_ARCHS4_coexpression',
-				'SP1_human_tf_ARCHS4_coexpression', 'RXRA_human_tf_ARCHS4_coexpression',
-				'ZNF395_human_tf_ARCHS4_coexpression', 'HOXC6_human_tf_ARCHS4_coexpression',
-				'HOXC4_human_tf_ARCHS4_coexpression', 'MAFK_human_tf_ARCHS4_coexpression',
-				'SREBF2_human_tf_ARCHS4_coexpression', 'RXRB_human_tf_ARCHS4_coexpression',
-				'PBX2_human_tf_ARCHS4_coexpression', 'E2F4_human_tf_ARCHS4_coexpression',
-				'ZBED1_human_tf_ARCHS4_coexpression', 'MEOX1_human_tf_ARCHS4_coexpression',
-				'ZNF263_human_tf_ARCHS4_coexpression', 'WIZ_human_tf_ARCHS4_coexpression',
-				'ZNF629_human_tf_ARCHS4_coexpression', 'GLIS2_human_tf_ARCHS4_coexpression',
-				'MLLT1_human_tf_ARCHS4_coexpression', 'FOXP4_human_tf_ARCHS4_coexpression',
-				'ZNF740_human_tf_ARCHS4_coexpression', 'ZNF710_human_tf_ARCHS4_coexpression',
-				'ZNF687_human_tf_ARCHS4_coexpression', 'CIZ1_human_tf_ARCHS4_coexpression',
-				'PRDM8_human_tf_ARCHS4_coexpression', 'CUX1_human_tf_ARCHS4_coexpression',
-				'ZNF653_human_tf_ARCHS4_coexpression', 'ZNF592_human_tf_ARCHS4_coexpression',
-				'ZNF217_human_tf_ARCHS4_coexpression', 'IRX5_human_tf_ARCHS4_coexpression',
-				'ZNF664_human_tf_ARCHS4_coexpression', 'FIZ1_human_tf_ARCHS4_coexpression',
-				'ZNF609_human_tf_ARCHS4_coexpression', 'ZFP41_human_tf_ARCHS4_coexpression',
-				'ZNF703_human_tf_ARCHS4_coexpression', 'ZFP91_human_tf_ARCHS4_coexpression',
-				'ZNF777_human_tf_ARCHS4_coexpression', 'ZBTB22_human_tf_ARCHS4_coexpression',
-				'ZBTB12_human_tf_ARCHS4_coexpression', 'TCF20_human_tf_ARCHS4_coexpression',
-				'TCF25_human_tf_ARCHS4_coexpression', 'ZC3H3_human_tf_ARCHS4_coexpression',
-				'NCOA3_human_tf_ARCHS4_coexpression', 'ZNF787_human_tf_ARCHS4_coexpression',
-				'ZMAT2_human_tf_ARCHS4_coexpression', 'FOXK1_human_tf_ARCHS4_coexpression',
-				'ZNF598_human_tf_ARCHS4_coexpression', 'ZNF768_human_tf_ARCHS4_coexpression',
-				'ZNF316_human_tf_ARCHS4_coexpression', 'PLXND1_human_tf_ARCHS4_coexpression',
-				'DVL2_human_tf_ARCHS4_coexpression', 'CSDE1_human_tf_ARCHS4_coexpression',
-				'AKAP8L_human_tf_ARCHS4_coexpression', 'BRD9_human_tf_ARCHS4_coexpression',
-				'HMG20B_human_tf_ARCHS4_coexpression', 'MBD3_human_tf_ARCHS4_coexpression',
-				'SRCAP_human_tf_ARCHS4_coexpression', 'ZC3H7B_human_tf_ARCHS4_coexpression',
-				'DOT1L_human_tf_ARCHS4_coexpression', 'SF3A2_human_tf_ARCHS4_coexpression',
-				'DVL1_human_tf_ARCHS4_coexpression', 'PLXNA1_human_tf_ARCHS4_coexpression',
-				'SLC2A4RG_human_tf_ARCHS4_coexpression', 'PRR12_human_tf_ARCHS4_coexpression',
-				'UBR4_human_tf_ARCHS4_coexpression', 'PLXNA3_human_tf_ARCHS4_coexpression',
-				'UNK_human_tf_ARCHS4_coexpression', 'SMAD6_human_tf_ARCHS4_coexpression',
-				'SMARCC2_human_tf_ARCHS4_coexpression', 'MINK1_human_tf_ARCHS4_coexpression',
-				'MBD1_human_tf_ARCHS4_coexpression', 'POGK_human_tf_ARCHS4_coexpression',
-				'SETDB1_human_tf_ARCHS4_coexpression', 'MTA2_human_tf_ARCHS4_coexpression',
-				'BRPF1_human_tf_ARCHS4_coexpression', 'ADAR_human_tf_ARCHS4_coexpression',
-				'DVL3_human_tf_ARCHS4_coexpression', 'PLXNB1_human_tf_ARCHS4_coexpression',
-				'ATMIN_human_tf_ARCHS4_coexpression', 'GATAD2A_human_tf_ARCHS4_coexpression',
-				'MECP2_human_tf_ARCHS4_coexpression', 'SSH3_human_tf_ARCHS4_coexpression',
-				'KAT5_human_tf_ARCHS4_coexpression', 'ANAPC2_human_tf_ARCHS4_coexpression',
-				'CCDC71_human_tf_ARCHS4_coexpression', 'TIGD5_human_tf_ARCHS4_coexpression',
-				'RBM10_human_tf_ARCHS4_coexpression', 'MTA1_human_tf_ARCHS4_coexpression',
-				'EP400_human_tf_ARCHS4_coexpression', 'H1FX_human_tf_ARCHS4_coexpression',
-				'H1F0_human_tf_ARCHS4_coexpression', 'NCOR2_human_tf_ARCHS4_coexpression',
-				'PLXNB2_human_tf_ARCHS4_coexpression', 'ZNF512B_human_tf_ARCHS4_coexpression',
-				'INF2_human_tf_ARCHS4_coexpression', 'REPIN1_human_tf_ARCHS4_coexpression'])]
+			Enrichr_Library(name=u'ENCODE_and_ChEA_Consensus_TFs_from_ChIP-X', category=u'Transcription', hasGrid=False, isFuzzy=False, format=u'{1} binds to the promoter region of {0}.', description='', terms=[u'EGR1_CHEA', u'E2F1_CHEA']),
+			Enrichr_Library(name=u'ARCHS4_TFs_Coexp', category=u'Transcription', hasGrid=False, isFuzzy=False, format=u'{0} is coexpressed with {1}.', description='', terms=[u'TEAD3_human_tf_ARCHS4_coexpression', u'HOXC8_human_tf_ARCHS4_coexpression', u'YBX1_human_tf_ARCHS4_coexpression', u'TFE3_human_tf_ARCHS4_coexpression', u'TCF3_human_tf_ARCHS4_coexpression', u'SREBF1_human_tf_ARCHS4_coexpression', u'CIC_human_tf_ARCHS4_coexpression', u'NFE2L1_human_tf_ARCHS4_coexpression', u'GRHL2_human_tf_ARCHS4_coexpression', u'RCOR1_human_tf_ARCHS4_coexpression', u'ESR1_human_tf_ARCHS4_coexpression', u'CEBPE_human_tf_ARCHS4_coexpression', u'MZF1_human_tf_ARCHS4_coexpression', u'XBP1_human_tf_ARCHS4_coexpression', u'TCFL5_human_tf_ARCHS4_coexpression', u'GMEB2_human_tf_ARCHS4_coexpression', u'E2F1_human_tf_ARCHS4_coexpression', u'MAZ_human_tf_ARCHS4_coexpression', u'USF2_human_tf_ARCHS4_coexpression', u'ERF_human_tf_ARCHS4_coexpression', u'GATA3_human_tf_ARCHS4_coexpression', u'UBTF_human_tf_ARCHS4_coexpression', u'WHSC1_human_tf_ARCHS4_coexpression', u'PRDM4_human_tf_ARCHS4_coexpression', u'SRF_human_tf_ARCHS4_coexpression', u'HOXB3_human_tf_ARCHS4_coexpression', u'MSX2_human_tf_ARCHS4_coexpression', u'ZNF205_human_tf_ARCHS4_coexpression', u'HOXC13_human_tf_ARCHS4_coexpression', u'HOXC11_human_tf_ARCHS4_coexpression', u'MXD4_human_tf_ARCHS4_coexpression', u'TRERF1_human_tf_ARCHS4_coexpression', u'SPDEF_human_tf_ARCHS4_coexpression', u'ZNF384_human_tf_ARCHS4_coexpression', u'ELK1_human_tf_ARCHS4_coexpression', u'ATF4_human_tf_ARCHS4_coexpression', u'FOXA1_human_tf_ARCHS4_coexpression', u'KLF16_human_tf_ARCHS4_coexpression', u'TFAP2A_human_tf_ARCHS4_coexpression', u'CREBZF_human_tf_ARCHS4_coexpression', u'ESR2_human_tf_ARCHS4_coexpression', u'FOXK2_human_tf_ARCHS4_coexpression', u'RFX5_human_tf_ARCHS4_coexpression', u'UBP1_human_tf_ARCHS4_coexpression', u'SKI_human_tf_ARCHS4_coexpression', u'ZBTB7B_human_tf_ARCHS4_coexpression', u'SNAPC4_human_tf_ARCHS4_coexpression', u'SMAD3_human_tf_ARCHS4_coexpression', u'E4F1_human_tf_ARCHS4_coexpression', u'FOXI1_human_tf_ARCHS4_coexpression', u'ZNF282_human_tf_ARCHS4_coexpression', u'HOXC5_human_tf_ARCHS4_coexpression', u'RARG_human_tf_ARCHS4_coexpression', u'RELA_human_tf_ARCHS4_coexpression', u'ESRRA_human_tf_ARCHS4_coexpression', u'SIX5_human_tf_ARCHS4_coexpression', u'IRX3_human_tf_ARCHS4_coexpression', u'HSF1_human_tf_ARCHS4_coexpression', u'SP1_human_tf_ARCHS4_coexpression', u'RXRA_human_tf_ARCHS4_coexpression', u'ZNF395_human_tf_ARCHS4_coexpression', u'HOXC6_human_tf_ARCHS4_coexpression', u'HOXC4_human_tf_ARCHS4_coexpression', u'MAFK_human_tf_ARCHS4_coexpression', u'SREBF2_human_tf_ARCHS4_coexpression', u'RXRB_human_tf_ARCHS4_coexpression', u'PBX2_human_tf_ARCHS4_coexpression', u'E2F4_human_tf_ARCHS4_coexpression', u'ZBED1_human_tf_ARCHS4_coexpression', u'MEOX1_human_tf_ARCHS4_coexpression', u'ZNF263_human_tf_ARCHS4_coexpression', u'WIZ_human_tf_ARCHS4_coexpression', u'ZNF629_human_tf_ARCHS4_coexpression', u'GLIS2_human_tf_ARCHS4_coexpression', u'MLLT1_human_tf_ARCHS4_coexpression', u'FOXP4_human_tf_ARCHS4_coexpression', u'ZNF740_human_tf_ARCHS4_coexpression', u'ZNF710_human_tf_ARCHS4_coexpression', u'ZNF687_human_tf_ARCHS4_coexpression', u'CIZ1_human_tf_ARCHS4_coexpression', u'PRDM8_human_tf_ARCHS4_coexpression', u'CUX1_human_tf_ARCHS4_coexpression', u'ZNF653_human_tf_ARCHS4_coexpression', u'ZNF592_human_tf_ARCHS4_coexpression', u'ZNF217_human_tf_ARCHS4_coexpression', u'IRX5_human_tf_ARCHS4_coexpression', u'ZNF664_human_tf_ARCHS4_coexpression', u'FIZ1_human_tf_ARCHS4_coexpression', u'ZNF609_human_tf_ARCHS4_coexpression', u'ZFP41_human_tf_ARCHS4_coexpression', u'ZNF703_human_tf_ARCHS4_coexpression', u'ZFP91_human_tf_ARCHS4_coexpression', u'ZNF777_human_tf_ARCHS4_coexpression', u'ZBTB22_human_tf_ARCHS4_coexpression', u'ZBTB12_human_tf_ARCHS4_coexpression', u'TCF20_human_tf_ARCHS4_coexpression', u'TCF25_human_tf_ARCHS4_coexpression', u'ZC3H3_human_tf_ARCHS4_coexpression', u'NCOA3_human_tf_ARCHS4_coexpression', u'ZNF787_human_tf_ARCHS4_coexpression', u'ZMAT2_human_tf_ARCHS4_coexpression', u'FOXK1_human_tf_ARCHS4_coexpression', u'ZNF598_human_tf_ARCHS4_coexpression', u'ZNF768_human_tf_ARCHS4_coexpression', u'ZNF316_human_tf_ARCHS4_coexpression', u'PLXND1_human_tf_ARCHS4_coexpression', u'DVL2_human_tf_ARCHS4_coexpression', u'CSDE1_human_tf_ARCHS4_coexpression', u'AKAP8L_human_tf_ARCHS4_coexpression', u'BRD9_human_tf_ARCHS4_coexpression', u'HMG20B_human_tf_ARCHS4_coexpression', u'MBD3_human_tf_ARCHS4_coexpression', u'SRCAP_human_tf_ARCHS4_coexpression', u'ZC3H7B_human_tf_ARCHS4_coexpression', u'DOT1L_human_tf_ARCHS4_coexpression', u'SF3A2_human_tf_ARCHS4_coexpression', u'DVL1_human_tf_ARCHS4_coexpression', u'PLXNA1_human_tf_ARCHS4_coexpression', u'SLC2A4RG_human_tf_ARCHS4_coexpression', u'PRR12_human_tf_ARCHS4_coexpression', u'UBR4_human_tf_ARCHS4_coexpression', u'PLXNA3_human_tf_ARCHS4_coexpression', u'UNK_human_tf_ARCHS4_coexpression', u'SMAD6_human_tf_ARCHS4_coexpression', u'SMARCC2_human_tf_ARCHS4_coexpression', u'MINK1_human_tf_ARCHS4_coexpression', u'MBD1_human_tf_ARCHS4_coexpression', u'POGK_human_tf_ARCHS4_coexpression', u'SETDB1_human_tf_ARCHS4_coexpression', u'MTA2_human_tf_ARCHS4_coexpression', u'BRPF1_human_tf_ARCHS4_coexpression', u'ADAR_human_tf_ARCHS4_coexpression', u'DVL3_human_tf_ARCHS4_coexpression', u'PLXNB1_human_tf_ARCHS4_coexpression', u'ATMIN_human_tf_ARCHS4_coexpression', u'GATAD2A_human_tf_ARCHS4_coexpression', u'MECP2_human_tf_ARCHS4_coexpression', u'SSH3_human_tf_ARCHS4_coexpression', u'KAT5_human_tf_ARCHS4_coexpression', u'ANAPC2_human_tf_ARCHS4_coexpression', u'CCDC71_human_tf_ARCHS4_coexpression', u'TIGD5_human_tf_ARCHS4_coexpression', u'RBM10_human_tf_ARCHS4_coexpression', u'MTA1_human_tf_ARCHS4_coexpression', u'EP400_human_tf_ARCHS4_coexpression', u'H1FX_human_tf_ARCHS4_coexpression', u'H1F0_human_tf_ARCHS4_coexpression', u'NCOR2_human_tf_ARCHS4_coexpression', u'PLXNB2_human_tf_ARCHS4_coexpression', u'ZNF512B_human_tf_ARCHS4_coexpression', u'INF2_human_tf_ARCHS4_coexpression', u'REPIN1_human_tf_ARCHS4_coexpression'])]
 
 	def testGenemap(self, gene, results):
 		enrichr = Enrichr()
@@ -201,7 +150,7 @@ class TestEnrichr(testly.TestCase):
 
 	def testExport(self, genes, description, retfile, results):
 		self.maxDiff = None
-		enrichr = Enrichr()
+		enrichr = Enrichr(cutoff = 1)
 		enrichr.addList(genes, description)
 		enrichr.enrich()
 		enrichr.export(retfile)
@@ -209,16 +158,15 @@ class TestEnrichr(testly.TestCase):
 		with open(retfile) as f:
 			for line in f:
 				line = line.strip()
-				if not line or line.startswith('rank'): continue
+				if not line or line.startswith('Term'): continue
 				ret.append(Enrichr_Term._make(line.split('\t')))
 		for i, result in enumerate(results):
 			for field in result._fields:
 				rval = getattr(result, field)
 				oval = getattr(ret[i], field)
-				if field == 'overlappingGenes':
-					oval = oval.split('|')
 				if isinstance(rval, (int, float)):
-					self.assertLess(abs(rval - float(oval)), .01)
+					oval = float(oval)
+					self.assertAlmostEqual(rval, oval, places=3)
 				else:
 					self.assertEqual(rval, oval)
 
@@ -226,7 +174,7 @@ class TestEnrichr(testly.TestCase):
 		yield GENES, 'Description', path.join(tempfile.gettempdir(), 'plot.png')
 
 	def testPlot(self, genes, description, plotfile):
-		enrichr = Enrichr()
+		enrichr = Enrichr(cutoff = 1)
 		enrichr.addList(genes, description)
 		enrichr.enrich()
 		enrichr.plot(plotfile)
