@@ -47,7 +47,7 @@ class Enrichr(object):
 	MSG_ERROR_ENRICH       = 'Error fetching enrichment results'
 	MSG_ERROR_SEARCH_TERM  = 'Error searching for terms'
 
-	def __init__(self, library = 'KEGG_2016', cutoff = 0.05, top = 20):
+	def __init__(self, library = 'KEGG_2016', cutoff = 0.05, top = 20, Rscript = 'Rscript'):
 		"""
 		Constructor
 		@params:
@@ -66,6 +66,7 @@ class Enrichr(object):
 		self.results = []
 		self.cutoff  = cutoff if isinstance(cutoff, dict) else {"by": "AdjPval", "value": cutoff}
 		self.top     = top
+		self.Rscript = Rscript
 
 	def addListFromFile(self, genefile, col = 0, delimit = '\t', skip = 0):
 		"""
@@ -223,7 +224,7 @@ class Enrichr(object):
 		self.export(retfile.name, top)
 
 		cmd = [
-			'Rscript', 
+			self.Rscript, 
 			path.join(path.dirname(path.realpath(__file__)), 'plot.R'), 
 			retfile.name,
 			outfile,
