@@ -174,7 +174,7 @@ class Enrichr(object):
 		self.results = sorted(self.results, key = lambda x: x.AdjPval)
 		return self.results
 
-	def genemap(self, gene):
+	def genemap(self, gene, libs = None):
 		"""
 		Find terms that contain a given gene
 		@params:
@@ -185,24 +185,31 @@ class Enrichr(object):
 		response = requests.get(Enrichr.URL_GENEMAP.format(gene = gene))
 		if not response.ok:
 			raise Exception(Enrichr.MSG_ERROR_SEARCH_TERM)
+		lib_query = libs or self.library
+		if not isinstance(lib_query, list):
+			lib_query = [lib_query]
 
 		data = json.loads(response.text)
 		descriptions = {desc['name']:(desc['description'] if 'description' in desc else '') \
 			for desc in data['descriptions']}
+		ret = {}
 		for category in data['categories']:
 			for lib in category['libraries']:
-				if lib['name'] == self.library:
-					return Enrichr_Library(
-						name        = lib['name'],
-						category    = category['name'],
-						hasGrid     = lib['hasGrid'],
-						isFuzzy     = lib['isFuzzy'],
-						format      = lib['format'],
-						description = descriptions[self.library] \
-							if self.library in descriptions else '',
-						terms       = data['gene'][self.library] \
-							if self.library in data['gene'] else []
-					)
+				if not lib['name'] in lib_query:
+					continue
+
+				ret[lib['name']] = Enrichr_Library(
+					name        = lib['name'],
+					category    = category['name'],
+					hasGrid     = lib['hasGrid'],
+					isFuzzy     = lib['isFuzzy'],
+					format      = lib['format'],
+					description = descriptions[self.library] \
+						if self.library in descriptions else '',
+					terms       = data['gene'][self.library] \
+						if self.library in data['gene'] else []
+				)
+		return ret if libs else ret[self.library] if self.library in ret else None
 
 	def export(self, outfile, top = None):
 
