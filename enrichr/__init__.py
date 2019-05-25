@@ -195,20 +195,22 @@ class Enrichr(object):
 		ret = {}
 		for category in data['categories']:
 			for lib in category['libraries']:
-				if not lib['name'] in lib_query:
+				libname = lib['name']
+				if not libname in lib_query:
 					continue
 
-				ret[lib['name']] = Enrichr_Library(
-					name        = lib['name'],
+				ret[libname] = Enrichr_Library(
+					name        = libname,
 					category    = category['name'],
 					hasGrid     = lib['hasGrid'],
 					isFuzzy     = lib['isFuzzy'],
 					format      = lib['format'],
-					description = descriptions[self.library] \
-						if self.library in descriptions else '',
-					terms       = data['gene'][self.library] \
-						if self.library in data['gene'] else []
+					description = descriptions[libname] \
+						if libname in descriptions else '',
+					terms       = data['gene'][libname] \
+						if libname in data['gene'] else []
 				)
+
 		return ret if libs else ret[self.library] if self.library in ret else None
 
 	def export(self, outfile, top = None):
