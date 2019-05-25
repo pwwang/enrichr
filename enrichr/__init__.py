@@ -187,30 +187,34 @@ class Enrichr(object):
 			raise Exception(Enrichr.MSG_ERROR_SEARCH_TERM)
 
 		data = json.loads(response.text)
-		descriptions = {desc['name']:(desc['description'] if 'description' in desc else '') for desc in data['descriptions']}
+		descriptions = {desc['name']:(desc['description'] if 'description' in desc else '') \
+			for desc in data['descriptions']}
 		for category in data['categories']:
 			for lib in category['libraries']:
-				yield Enrichr_Library(
-					name        = lib['name'],
-					category    = category['name'],
-					hasGrid     = lib['hasGrid'],
-					isFuzzy     = lib['isFuzzy'],
-					format      = lib['format'],
-					description = descriptions[lib['name']],
-					terms       = data['gene'][lib['name']]
-				)
+				if lib['name'] == self.library:
+					return Enrichr_Library(
+						name        = lib['name'],
+						category    = category['name'],
+						hasGrid     = lib['hasGrid'],
+						isFuzzy     = lib['isFuzzy'],
+						format      = lib['format'],
+						description = descriptions[self.library] \
+							if self.library in descriptions else '',
+						terms       = data['gene'][self.library] \
+							if self.library in data['gene'] else []
+					)
 
 	def export(self, outfile, top = None):
-		
+
 		with open(outfile, 'w') as fout:
 			fout.write('\t'.join(Enrichr_Term._fields) + '\n')
 			if not self.results:
-				return 
-			
+				return
+
 			top = top or self.top
 			results = self.results if top is None else self.results[:top]
 			results = [ret for ret in results if getattr(ret, self.cutoff['by']) < self.cutoff['value']]
-			
+
 			for term in results:
 				fout.write('\t'.join([
 					"%.2E" % getattr(term, field) if 'Pval' in field else \
@@ -224,8 +228,8 @@ class Enrichr(object):
 		self.export(retfile.name, top)
 
 		cmd = [
-			self.Rscript, 
-			path.join(path.dirname(path.realpath(__file__)), 'plot.R'), 
+			self.Rscript,
+			path.join(path.dirname(path.realpath(__file__)), 'plot.R'),
 			retfile.name,
 			outfile,
 			str(self.size),
