@@ -163,8 +163,9 @@ class Enrichr(object):
 		#data = json.loads(response.text)
 		#self.results = sorted([Enrichr_Term._make(dt) for dt in data[library]], key = lambda term: float(term.adjPval))
 		response = requests.get(Enrichr.URL_EXPORT.format(listid = listid, library = library), stream = True)
+		response.encoding = 'utf-8'
 		self.results = []
-		for line in response.iter_lines():
+		for line in response.text.splitlines():
 			if line.startswith('Term'):
 				continue
 			data = line.split('\t')
