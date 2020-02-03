@@ -36,9 +36,9 @@ pdata = data.frame(
     OverlapN = as.numeric(ovdata[, 1]),
     TermN = sprintf("n = %-3s", ovdata[, 2])
 )
-    
+
 maxOvN = max(pdata$OverlapN)
-maxLogPval = max(pdata$LogPval)
+maxLogPval = max(pdata$LogPval, 1)
 pdata$LogPval = pdata$LogPval/maxLogPval*maxOvN
 pcut = -log10(.05) * maxOvN / maxLogPval
 pvalticks = ceiling(max(maxLogPval, -log10(.05)))
@@ -57,16 +57,16 @@ if (pvalticks >=6) {
 }
 
 library(ggplot2)
-p = ggplot(pdata) + 
+p = ggplot(pdata) +
 	geom_col(aes(x = Term, y = OverlapN), fill = "blue", color = '#4286f4', alpha = .1) +
     geom_hline(yintercept = pcut, color = "red", alpha = .3, linetype = 'dashed') +
 	geom_line(aes(x = Term, y = LogPval, group = 1), color = "red", size = .5)  +
-	geom_point(aes(x = Term, y = LogPval, group = 1), fill = "white", color = "red3", size = 2, shape = 21) + 
+	geom_point(aes(x = Term, y = LogPval, group = 1), fill = "white", color = "red3", size = 2, shape = 21) +
     geom_text(aes(x = Term, y = 0, label = TermN, group = 1), hjust = -.2, size = 3) +
 	scale_y_continuous(
         name = sprintf("# overlapping genes (query size: %s)", qsize),
 		sec.axis = sec_axis(
-            ~ . * maxLogPval / maxOvN, 
+            ~ . * maxLogPval / maxOvN,
             name = "-log10(adj.pval)",
             breaks = ptbreaks,
             labels = ptlabels
@@ -76,7 +76,7 @@ p = ggplot(pdata) +
 	theme(
 		panel.background = element_rect(fill = alpha("#EFEFEF", .4)),
 		panel.border = element_blank(),
-		panel.grid.major = element_blank(), 
+		panel.grid.major = element_blank(),
 		panel.grid.minor = element_blank(),
 		axis.line.x.top = element_line(color = "red3", size = .6),
 		axis.ticks.x.top = element_line(color = "red3"),
