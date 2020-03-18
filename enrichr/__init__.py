@@ -183,6 +183,11 @@ class Enrichr:
         response = requests.get(URL_EXPORT.format(
             listid=listid, library=library), stream=True)
         response.encoding = 'utf-8'
+        if "Error" in response.text:
+            raise RuntimeError('%s\n%s' % (
+                self.library, re.sub(r'\s*<[^<]+?>\s*', ' ', response.text)
+            ))
+
         self.results = []
         for line in response.text.splitlines():
             if line.startswith('Term'):
